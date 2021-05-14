@@ -133,6 +133,7 @@ class ServiceUsuarioSpec extends Specification{
                 .nombre("Luis")
                 .clave("123456")
                 .email("luis@dominio.cl")
+                .contactos(this.listaContacto)
                 .build()
         this.usuarioRepository.findById(_) >> Optional.empty()
 
@@ -143,6 +144,26 @@ class ServiceUsuarioSpec extends Specification{
         noExceptionThrown()
     }
 
+
+    def "Insertar usuario sin contacto. Es igual a null"(){
+        given:"Con los siguientes datos"
+        UsuarioRequestDTO usuarioRequestDTO = UsuarioRequestDTO.builder()
+                .rut(6968503)
+                .nombre("Luis")
+                .clave("123456")
+                .email("luis@dominio.cl")
+                .contactos(null)
+                .build()
+
+        this.usuarioRepository.findById(_) >> Optional.empty()
+        when:"Se agrega el usuario"
+        this.servicioUsuario.insertar(usuarioRequestDTO)
+
+        then:"Se obtiene su respuesta"
+        noExceptionThrown()
+    }
+
+
     def "Insertar usuario ex"(){
         given:"Con los siguientes datos"
         UsuarioRequestDTO usuarioRequestDTO = UsuarioRequestDTO.builder()
@@ -150,6 +171,7 @@ class ServiceUsuarioSpec extends Specification{
                 .nombre("Luis")
                 .clave("123456")
                 .email("luis@dominio.cl")
+                .contactos(null)
                 .build()
         this.usuarioRepository.findById(_) >> Optional.of(usuarioRequestDTO)
 
@@ -164,14 +186,12 @@ class ServiceUsuarioSpec extends Specification{
     def "Modificar usuario"(){
         given:"Con los siguientes datos"
 
-        List <Contacto> listaContacto = new ArrayList<Contacto>();
-
         UsuarioRequestDTO usuarioRequestDTO = UsuarioRequestDTO.builder()
                 .rut(6968503)
                 .nombre("Luis")
                 .clave("123456")
                 .email("luis@dominio.cl")
-                .contactos(listaContacto)
+                .contactos(this.listaContacto)
                 .build()
 
         UsuarioRequestDTO usuarioModificadoRequestDTO = UsuarioRequestDTO.builder()
@@ -179,7 +199,7 @@ class ServiceUsuarioSpec extends Specification{
                 .nombre("Luisa")
                 .clave("654321")
                 .email("luisa@dominio.cl")
-                .contactos(listaContacto)
+                .contactos(this.listaContacto)
                 .build()
 
         this.usuarioRepository.findById(_) >> Optional.of(usuarioRequestDTO)
@@ -190,6 +210,29 @@ class ServiceUsuarioSpec extends Specification{
         then:"Respuesta a la actualización"
         noExceptionThrown()
     }
+
+
+    def "Modificar usuario sin contactos"(){
+        given:"Con los siguientes datos"
+
+        this.usuarioRepository.findById(_) >> Optional.of(this.usuarioUno)
+
+        UsuarioRequestDTO usuarioRequestDTO = UsuarioRequestDTO.builder()
+                .rut(6968503)
+                .nombre("Luis")
+                .clave("123456")
+                .email("luis@dominio.cl")
+                .contactos(null)
+                .build()
+
+        when:"Se realiza la modificación"
+        this.servicioUsuario.modificar(usuarioRequestDTO)
+
+        then:"Se obtiene el resultado"
+        noExceptionThrown()
+
+    }
+
 
     def "Eliminacion de usuario"(){
         given:"Con los siguientes datos"

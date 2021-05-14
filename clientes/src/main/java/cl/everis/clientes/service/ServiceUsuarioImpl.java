@@ -106,10 +106,8 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
             List<Contacto> listaContactos = new ArrayList<>();
 
             if (usuarioRequestDTO.getContactos() == null){
-                    List <Contacto> listaContactosResq = new ArrayList<>();
-                usuarioRequestDTO.setContactos(listaContactosResq);
+                usuarioRequestDTO.setContactos(listaContactos);
             }else{
-
                 for(int i = 0; i < usuarioRequestDTO.getContactos().size(); i++) {
                     Contacto contacto = Contacto.builder()
                             .usuario(Usuario.builder().rut(usuarioRequestDTO.getRut()).build())
@@ -117,10 +115,8 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
                             .codigoCiudad(usuarioRequestDTO.getContactos().get(i).getCodigoCiudad())
                             .codigoPais(usuarioRequestDTO.getContactos().get(i).getCodigoPais())
                             .build();
-
                     listaContactos.add(contacto);
                 }
-
             }
 
             Usuario usuario = Usuario.builder()
@@ -146,17 +142,19 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
 
         List<Contacto> listaContactos = new ArrayList<>();
 
-        for(int i = 0; i < usuarioRequestDTO.getContactos().size(); i++) {
-            Contacto contacto = Contacto.builder()
-                    .usuario(Usuario.builder().rut(usuarioRequestDTO.getRut()).build())
-                    .numero(usuarioRequestDTO.getContactos().get(i).getNumero())
-                    .codigoCiudad(usuarioRequestDTO.getContactos().get(i).getCodigoCiudad())
-                    .codigoPais(usuarioRequestDTO.getContactos().get(i).getCodigoPais())
-                    .build();
-
-            listaContactos.add(contacto);
+        if(usuarioRequestDTO.getContactos() == null) {
+            listaContactos.add(Contacto.builder().build());
+        }else{
+            for (int i = 0; i < usuarioRequestDTO.getContactos().size(); i++) {
+                Contacto contacto = Contacto.builder()
+                        .usuario(Usuario.builder().rut(usuarioRequestDTO.getRut()).build())
+                        .numero(usuarioRequestDTO.getContactos().get(i).getNumero())
+                        .codigoCiudad(usuarioRequestDTO.getContactos().get(i).getCodigoCiudad())
+                        .codigoPais(usuarioRequestDTO.getContactos().get(i).getCodigoPais())
+                        .build();
+                listaContactos.add(contacto);
+            }
         }
-
         Usuario usuario = Usuario.builder()
                 .rut(usuarioRequestDTO.getRut())
                 .clave(usuarioRequestDTO.getClave())

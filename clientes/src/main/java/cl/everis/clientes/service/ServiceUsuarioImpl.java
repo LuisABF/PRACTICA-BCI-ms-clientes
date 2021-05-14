@@ -1,7 +1,7 @@
 package cl.everis.clientes.service;
 
-import cl.everis.clientes.dto.UsuarioRequestDTO;
-import cl.everis.clientes.dto.UsuarioResponseDTO;
+import cl.everis.clientes.dto.*;
+import cl.everis.clientes.model.Contacto;
 import cl.everis.clientes.model.Usuario;
 import cl.everis.clientes.repository.UsuarioRepo;
 import cl.everis.clientes.exception.ErrorException;
@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,95 +18,162 @@ import java.util.Optional;
 @Service
 public class ServiceUsuarioImpl implements ServiceUsuario{
 
-    private UsuarioRepo repo;
+    private UsuarioRepo usuarioRespository;
 
-    public ServiceUsuarioImpl (UsuarioRepo repo){
-        this.repo = repo;
+
+    public ServiceUsuarioImpl(UsuarioRepo repo){
+        this.usuarioRespository = repo;
     }
 
     @Override
     public List <UsuarioResponseDTO> listarUsuarios() {
 
-        List <Usuario> listaUsuarios = repo.findAll();
+        List <Usuario> listaUsuarios = usuarioRespository.findAll();
 
         if(listaUsuarios.size() == 0){
             throw new ErrorException(HttpStatus.NO_CONTENT, "Sin resultados");
         }
-
         List <UsuarioResponseDTO> listaUsuarioResponseDTO = new ArrayList<>();
 
         listaUsuarios.forEach(usuario ->
-              listaUsuarioResponseDTO.add(UsuarioResponseDTO.builder()
-                        .idUsuario(usuario.getIdUsuario())
+                {
+                    List <ContactoResponseDTO> ListaContactoResponseDTOS = new ArrayList<>();
+                    usuario.getContactos().forEach(contacto -> {
+                            ListaContactoResponseDTOS.add(ContactoResponseDTO.builder()
+                                    .codigoPais(contacto.getCodigoPais())
+                                    .codigoCiudad(contacto.getCodigoCiudad())
+                                    .numero(contacto.getNumero())
+                                    .build());
+                        });
+
+                listaUsuarioResponseDTO.add(UsuarioResponseDTO.builder()
+                        .rut(usuario.getRut())
                         .nombre(usuario.getNombre())
                         .clave(usuario.getClave())
                         .email(usuario.getEmail())
-                        .contactos(usuario.getContactos())
-                        .build())
-                );
+                        .contactos(ListaContactoResponseDTOS)
+                        .build());
+                }
+        );
 
         return listaUsuarioResponseDTO;
+
     }
 
     @Override
-    public UsuarioResponseDTO obtenerUsuario(int id){
+    public UsuarioResponseDTO obtenerUsuario(long id){
 
-        Optional <Usuario> usuario = repo.findById(id);
+        Optional <Usuario> usuarioRepository = usuarioRespository.findById(id);
 
-        if(usuario.isPresent()) {
-            Usuario usr = usuario.get();
+        if(usuarioRepository.isPresent()) {
+            Usuario usuario = usuarioRepository.get();
+
+            List <ContactoResponseDTO> ListaContactoResponseDTOS = new ArrayList<>();
+
+            for(int i = 0; i < usuario.getContactos().size() ; i++) {
+                ContactoResponseDTO contactoResponseDTO = ContactoResponseDTO.builder()
+                        .codigoPais(usuario.getContactos().get(i).getCodigoPais())
+                        .codigoCiudad(usuario.getContactos().get(i).getCodigoCiudad())
+                        .numero(usuario.getContactos().get(i).getNumero())
+                        .build();
+
+                ListaContactoResponseDTOS.add(contactoResponseDTO);
+            }
 
             return UsuarioResponseDTO.builder()
-                    .idUsuario(usr.getIdUsuario())
-                    .clave(usr.getClave())
-                    .nombre(usr.getNombre())
-                    .contactos(usr.getContactos())
-                    .email(usr.getEmail())
+                    .rut(usuario.getRut())
+                    .clave(usuario.getClave())
+                    .nombre(usuario.getNombre())
+                    .contactos(ListaContactoResponseDTOS)
+                    .email(usuario.getEmail())
                     .build();
+
         }else{
             throw new ErrorException(HttpStatus.NO_CONTENT, "Sin resultados");
         }
     }
 
     @Override
+    @Transactional
     public void insertar(UsuarioRequestDTO usuarioRequestDTO){
 
-        Optional <Usuario> buscarUsuarioExistente = repo.findById(usuarioRequestDTO.getIdUsuario());
+        Optional <Usuario> buscarUsuarioExistente = usuarioRespository.findById(usuarioRequestDTO.getRut());
 
         if(buscarUsuarioExistente.isPresent()){
             throw new ErrorException(HttpStatus.CONFLICT, "Debe ingresar un idUsuario diferente");
-        }else{
+        }else {
+
+            List<Contacto> listaContactos = new ArrayList<>();
+
+            if (usuarioRequestDTO.getContactos() == null){
+                    List <Contacto> listaContactosResq = new ArrayList<>();
+                usuarioRequestDTO.setContactos(listaContactosResq);
+            }else{
+
+                for(int i = 0; i < usuarioRequestDTO.getContactos().size(); i++) {
+                    Contacto contacto = Contacto.builder()
+                            .usuario(Usuario.builder().rut(usuarioRequestDTO.getRut()).build())
+                            .numero(usuarioRequestDTO.getContactos().get(i).getNumero())
+                            .codigoCiudad(usuarioRequestDTO.getContactos().get(i).getCodigoCiudad())
+                            .codigoPais(usuarioRequestDTO.getContactos().get(i).getCodigoPais())
+                            .build();
+
+                    listaContactos.add(contacto);
+                }
+
+            }
+
             Usuario usuario = Usuario.builder()
-                    .idUsuario(usuarioRequestDTO.getIdUsuario())
+                    .rut(usuarioRequestDTO.getRut())
                     .clave(usuarioRequestDTO.getClave())
                     .nombre(usuarioRequestDTO.getNombre())
-                    .contactos(usuarioRequestDTO.getContactos())
+                    .contactos(listaContactos)
                     .email(usuarioRequestDTO.getEmail())
+                    .created(LocalDateTime.now().toString())
+                    .modified(LocalDateTime.now().toString())
+                    .isactive(true)
+                    .lastLogin(LocalDateTime.now().toString())
                     .build();
 
-            repo.save(usuario);
+            usuarioRespository.save(usuario);
         }
 
     }
 
     @Override
+    @Transactional
     public void modificar(@RequestBody UsuarioRequestDTO usuarioRequestDTO){
+
+        List<Contacto> listaContactos = new ArrayList<>();
+
+        for(int i = 0; i < usuarioRequestDTO.getContactos().size(); i++) {
+            Contacto contacto = Contacto.builder()
+                    .usuario(Usuario.builder().rut(usuarioRequestDTO.getRut()).build())
+                    .numero(usuarioRequestDTO.getContactos().get(i).getNumero())
+                    .codigoCiudad(usuarioRequestDTO.getContactos().get(i).getCodigoCiudad())
+                    .codigoPais(usuarioRequestDTO.getContactos().get(i).getCodigoPais())
+                    .build();
+
+            listaContactos.add(contacto);
+        }
+
         Usuario usuario = Usuario.builder()
-                .idUsuario(usuarioRequestDTO.getIdUsuario())
+                .rut(usuarioRequestDTO.getRut())
                 .clave(usuarioRequestDTO.getClave())
                 .nombre(usuarioRequestDTO.getNombre())
-                .contactos(usuarioRequestDTO.getContactos())
+                .contactos(listaContactos)
                 .email(usuarioRequestDTO.getEmail())
                 .build();
-        repo.save(usuario);
+        usuarioRespository.save(usuario);
     }
 
     @Override
-    public void eliminar(@PathVariable("id") int id){
-        Optional <Usuario> usuarioRequestDTO = repo.findById(id);
+    @Transactional
+    public void eliminar(@PathVariable("id") long id){
+        Optional <Usuario> usuarioRequestDTO = usuarioRespository.findById(id);
 
         if(usuarioRequestDTO.isPresent()) {
-            repo.deleteById(id);
+            usuarioRespository.deleteById(id);
         }else{
             throw new ErrorException(HttpStatus.NOT_FOUND, "No Encontrado");
         }

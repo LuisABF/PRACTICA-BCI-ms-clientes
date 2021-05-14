@@ -1,6 +1,7 @@
 package cl.everis.clientes.dto;
 
 import lombok.*;
+import java.util.List;
 
 
 @Setter
@@ -10,11 +11,16 @@ import lombok.*;
 @Builder
 
 public class UsuarioResponseDTO {
-    private int idUsuario;
+
+    private long rut;
 
     private String nombre;
+
     private String clave;
+
     private String email;
-    private String contactos;
+
+    private List <ContactoResponseDTO> contactos;
+
 
 }

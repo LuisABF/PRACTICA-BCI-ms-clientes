@@ -1,8 +1,8 @@
 package cl.everis.clientes.controller
 
+import cl.everis.clientes.dto.ContactoResponseDTO
 import cl.everis.clientes.dto.UsuarioRequestDTO
 import cl.everis.clientes.dto.UsuarioResponseDTO
-import cl.everis.clientes.model.Usuario
 import cl.everis.clientes.service.ServiceUsuario
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,22 +15,24 @@ class UsuarioControllerSpec extends Specification{
     ServiceUsuario servicioUsuario = Stub(ServiceUsuario.class)
     UsuarioResponseDTO usuarioResponseDTO
     UsuarioRequestDTO usuarioRequestDTO
+    ContactoResponseDTO contactoResponseDTO
 
     def setup(){
+
         this.usuarioResponseDTO = UsuarioResponseDTO.builder()
-                .idUsuario(1)
+                .rut(6968503)
                 .nombre("Luis")
                 .clave("123456")
                 .email("luis@dominio.cl")
-                .contactos("56999999999")
+                .contactos(null)
                 .build()
 
         this.usuarioRequestDTO = UsuarioRequestDTO.builder()
-                .idUsuario(1)
+                .rut(13950721)
                 .nombre("Luis")
                 .clave("123456")
                 .email("luis@dominio.cl")
-                .contactos("56999999999")
+                .contactos(null)
                 .build()
 
         this.usuarioController = new UsuarioController(this.servicioUsuario)
@@ -40,6 +42,7 @@ class UsuarioControllerSpec extends Specification{
         given: "dados los siguientes datos"
 
         List<UsuarioResponseDTO> usuarios = new ArrayList<>()
+
         usuarios.add(this.usuarioResponseDTO)
 
         this.servicioUsuario.listarUsuarios() >> usuarios
@@ -49,26 +52,25 @@ class UsuarioControllerSpec extends Specification{
 
         then: "obtengo un status ok"
         respuesta.getStatusCode() == HttpStatus.OK
+        respuesta.getBody().get(0).getRut() == 6968503
         respuesta.getBody().get(0).getNombre().equals("Luis")
         respuesta.getBody().get(0).getClave().equals("123456")
         respuesta.getBody().get(0).getEmail().equals("luis@dominio.cl")
-        respuesta.getBody().get(0).getContactos().equals("56999999999")
     }
 
     def "Listar Usuario"(){
         given:"dado los siguientes datos de usuario"
-        this.servicioUsuario.obtenerUsuario(usuarioResponseDTO.idUsuario) >> this.usuarioResponseDTO
+        this.servicioUsuario.obtenerUsuario(usuarioResponseDTO.rut) >> this.usuarioResponseDTO
 
         when:"listo el usuario"
-        ResponseEntity<UsuarioResponseDTO> respuesta = this.usuarioController.obtenerUsuario(1)
+        ResponseEntity<UsuarioResponseDTO> respuesta = this.usuarioController.obtenerUsuario(6968503)
 
         then:"obtengo el OK"
         respuesta.getStatusCode() == HttpStatus.OK
-        respuesta.getBody().getIdUsuario().equals(1)
+        respuesta.getBody().getRut() == 6968503
         respuesta.getBody().getNombre().equals("Luis")
         respuesta.getBody().getClave().equals("123456")
         respuesta.getBody().getEmail().equals("luis@dominio.cl")
-        respuesta.getBody().getContactos().equals("56999999999")
 
     }
 

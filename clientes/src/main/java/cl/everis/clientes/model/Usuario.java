@@ -1,11 +1,10 @@
 package cl.everis.clientes.model;
-
 import lombok.*;
+import org.hibernate.annotations.Cascade;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.validation.constraints.Email;
 
 @Entity
 @Setter
@@ -13,20 +12,22 @@ import javax.validation.constraints.Email;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Usuario {
+@Table(name="USUARIO")
+public class Usuario implements Serializable {
 
     @Id
-    private int idUsuario;
+    private long rut;
 
     @Column(name="nombre", length = 50)
     private String nombre;
 
     private String clave;
 
-    @Email(message = "Email should be valid")
     private String email;
 
-    private String contactos;
+    @OneToMany(mappedBy = "usuario")
+    @Cascade(value={org.hibernate.annotations.CascadeType.ALL})
+    private List <Contacto> contactos;
 
     private String created;
 
@@ -36,7 +37,7 @@ public class Usuario {
 
     private String token;
 
-    private String isactive;
+    private boolean isactive;
 
 
 }

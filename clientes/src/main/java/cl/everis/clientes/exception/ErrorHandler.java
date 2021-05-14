@@ -18,15 +18,12 @@ public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDTO> methodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException e) {
 
-        // get spring errors
         BindingResult result = e.getBindingResult();
         List<FieldError> fieldErrors = result.getFieldErrors();
 
-        // convert errors to standard string
         StringBuilder errorMessage = new StringBuilder();
         fieldErrors.forEach(f -> errorMessage.append(f.getField() + ": " + f.getDefaultMessage() +  ".  "));
 
-        // return error info object with standard json
         ErrorDTO errorDTO = new ErrorDTO(String.valueOf(HttpStatus.BAD_REQUEST.value()), errorMessage.toString());
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }

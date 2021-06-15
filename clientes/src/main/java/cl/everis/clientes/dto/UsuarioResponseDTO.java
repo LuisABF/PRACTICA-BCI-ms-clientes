@@ -1,8 +1,13 @@
 package cl.everis.clientes.dto;
 
 import lombok.*;
+
+import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Clase DTO de contacto del Response
+ */
 
 @Setter
 @Getter
@@ -10,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 
-public class UsuarioResponseDTO {
+public class UsuarioResponseDTO implements Serializable {
 
     private long rut;
 

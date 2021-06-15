@@ -5,26 +5,41 @@ import cl.everis.clientes.model.Contacto;
 import cl.everis.clientes.model.Usuario;
 import cl.everis.clientes.repository.UsuarioRepo;
 import cl.everis.clientes.exception.ErrorException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * Clase de implementacion de los metodos declarados en la interfaz,
+ * donde se realiza la logica de negocio para poder persistir mediante JpaRepository en base de datos
+ *
+ * @author Luis Bascunan
+ *
+ */
 
 @Service
 public class ServiceUsuarioImpl implements ServiceUsuario{
 
-    private UsuarioRepo usuarioRespository;
-
+    private final UsuarioRepo usuarioRespository;
 
     public ServiceUsuarioImpl(UsuarioRepo repo){
         this.usuarioRespository = repo;
     }
 
+    @Value("${conflictoId}")
+    private String conflictoId;
+
+    /**
+     * Metodo que inserta los registros de usuario
+     */
     @Override
     public List <UsuarioResponseDTO> listarUsuarios() {
 
@@ -37,14 +52,14 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
 
         listaUsuarios.forEach(usuario ->
                 {
-                    List <ContactoResponseDTO> ListaContactoResponseDTOS = new ArrayList<>();
-                    usuario.getContactos().forEach(contacto -> {
-                            ListaContactoResponseDTOS.add(ContactoResponseDTO.builder()
-                                    .codigoPais(contacto.getCodigoPais())
-                                    .codigoCiudad(contacto.getCodigoCiudad())
-                                    .numero(contacto.getNumero())
-                                    .build());
-                        });
+                List <ContactoResponseDTO> ListaContactoResponseDTOS = usuario.getContactos()
+                        .stream()
+                        .map(contacto -> ContactoResponseDTO.builder()
+                                .codigoPais(contacto.getCodigoPais())
+                                .codigoCiudad(contacto.getCodigoCiudad())
+                                .numero(contacto.getNumero())
+                                .build())
+                        .collect(Collectors.toList());
 
                 listaUsuarioResponseDTO.add(UsuarioResponseDTO.builder()
                         .rut(usuario.getRut())
@@ -60,6 +75,9 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
 
     }
 
+    /**
+     * Metodo que obtiene los datos de un usuario determinado
+     */
     @Override
     public UsuarioResponseDTO obtenerUsuario(long id){
 
@@ -68,23 +86,21 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
         if(usuarioRepository.isPresent()) {
             Usuario usuario = usuarioRepository.get();
 
-            List <ContactoResponseDTO> ListaContactoResponseDTOS = new ArrayList<>();
 
-            for(int i = 0; i < usuario.getContactos().size() ; i++) {
-                ContactoResponseDTO contactoResponseDTO = ContactoResponseDTO.builder()
-                        .codigoPais(usuario.getContactos().get(i).getCodigoPais())
-                        .codigoCiudad(usuario.getContactos().get(i).getCodigoCiudad())
-                        .numero(usuario.getContactos().get(i).getNumero())
-                        .build();
-
-                ListaContactoResponseDTOS.add(contactoResponseDTO);
-            }
+            List<ContactoResponseDTO> contactos = usuario.getContactos()
+                    .stream()
+                    .map(contacto -> ContactoResponseDTO.builder()
+                            .codigoPais(contacto.getCodigoPais())
+                            .codigoCiudad(contacto.getCodigoCiudad())
+                            .numero(contacto.getNumero())
+                            .build())
+                    .collect(Collectors.toList());
 
             return UsuarioResponseDTO.builder()
                     .rut(usuario.getRut())
                     .clave(usuario.getClave())
                     .nombre(usuario.getNombre())
-                    .contactos(ListaContactoResponseDTOS)
+                    .contactos(contactos)
                     .email(usuario.getEmail())
                     .build();
 
@@ -93,6 +109,9 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
         }
     }
 
+    /**
+     * Metodo que inserta los registros de usuario
+     */
     @Override
     @Transactional
     public void insertar(UsuarioRequestDTO usuarioRequestDTO){
@@ -100,7 +119,7 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
         Optional <Usuario> buscarUsuarioExistente = usuarioRespository.findById(usuarioRequestDTO.getRut());
 
         if(buscarUsuarioExistente.isPresent()){
-            throw new ErrorException(HttpStatus.CONFLICT, "Debe ingresar un idUsuario diferente");
+            throw new ErrorException(HttpStatus.CONFLICT, conflictoId);
         }else {
 
             List<Contacto> listaContactos = new ArrayList<>();
@@ -136,9 +155,12 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
 
     }
 
+    /**
+     * Metodo que actualiza los datos de un usuario determinado
+     */
     @Override
     @Transactional
-    public void modificar(@RequestBody UsuarioRequestDTO usuarioRequestDTO){
+    public void modificar( UsuarioRequestDTO usuarioRequestDTO){
 
         List<Contacto> listaContactos = new ArrayList<>();
 
@@ -165,9 +187,13 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
         usuarioRespository.save(usuario);
     }
 
+
+    /**
+     * Metodo que elimina un usuario
+     */
     @Override
     @Transactional
-    public void eliminar(@PathVariable("id") long id){
+    public void eliminar(long id){
         Optional <Usuario> usuarioRequestDTO = usuarioRespository.findById(id);
 
         if(usuarioRequestDTO.isPresent()) {

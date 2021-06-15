@@ -1,0 +1,2 @@
+INSERT INTO usuarios (rut, nombre, clave, email, isactive, CREATED_AT , LAST_LOGIN, UPDATE_AT ) VALUES
+  ('18180945', 'Arturo', '12323434', 'luis@algo.cl', true, '2021-06-14T12:02:33.154', '2021-06-14T12:02:33.154', '2021-06-14T12:02:33.154');

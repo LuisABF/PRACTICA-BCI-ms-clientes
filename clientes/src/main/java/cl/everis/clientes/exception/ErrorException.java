@@ -1,27 +1,19 @@
 package cl.everis.clientes.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+ @Getter
 public class ErrorException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
-    private HttpStatus httpStatus;
-    private Object object;
+    private final HttpStatus httpStatus;
+    private final String message;
 
 
-    public ErrorException(HttpStatus httpStatus, Object object) {
-        super(httpStatus.getReasonPhrase());
+    public ErrorException(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;
-        this.object = object;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return this.httpStatus;
-    }
-
-
-    public Object getBody(){
-        return object;
+        this.message = message;
     }
 
 

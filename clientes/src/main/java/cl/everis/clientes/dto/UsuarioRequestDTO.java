@@ -4,7 +4,12 @@ import cl.everis.clientes.model.Contacto;
 import lombok.*;
 
 import javax.validation.constraints.*;
+import java.io.Serializable;
 import java.util.List;
+
+/**
+ * Clase DTO de usuario del Request
+ */
 
 @Setter
 @Getter
@@ -12,15 +17,13 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 
-public class UsuarioRequestDTO {
+public class UsuarioRequestDTO implements Serializable {
     @Min(value=1000000, message = "Debe ingresar un rut valido")
     private long rut;
 
     @NotNull(message = "no puede ser nulo")
     @Size(min=2, message = "Debe ingresar al menos 2 valores")
     private String nombre;
-
-    @Pattern(regexp = "([A-Z])([a-z]*)", message = "La contraseña debe tener una Mayuscula, letras minúsculas y dos numeros")
 
     private String clave;
 

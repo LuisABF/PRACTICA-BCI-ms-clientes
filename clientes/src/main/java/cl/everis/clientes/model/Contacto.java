@@ -6,24 +6,21 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.io.Serializable;
 
+/**
+ * Clase Entity para la persistencia de los telefonos del usuario
+ */
+
 @Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="CONTACTO")
-public class Contacto implements Serializable {
+@Table(name="contactos")
+public class Contacto {
 
     @Id
-    @GeneratedValue(
-            strategy= GenerationType.AUTO,
-            generator="native"
-    )
-    @GenericGenerator(
-            name = "native",
-            strategy = "native"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idContacto;
 
     private String numero ;

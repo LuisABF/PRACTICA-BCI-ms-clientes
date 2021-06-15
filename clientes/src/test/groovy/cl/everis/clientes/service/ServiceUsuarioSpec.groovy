@@ -1,6 +1,5 @@
 package cl.everis.clientes.service
 
-import cl.everis.clientes.dto.ContactoResponseDTO
 import cl.everis.clientes.dto.UsuarioRequestDTO
 import cl.everis.clientes.dto.UsuarioResponseDTO
 import cl.everis.clientes.exception.ErrorException
@@ -92,7 +91,6 @@ class ServiceUsuarioSpec extends Specification{
         ErrorException error = thrown()
         respuesta == null
         error.getHttpStatus() == HttpStatus.NO_CONTENT
-        error.getBody().equals("Sin resultados")
     }
 
     def "Obtiener usuario"(){

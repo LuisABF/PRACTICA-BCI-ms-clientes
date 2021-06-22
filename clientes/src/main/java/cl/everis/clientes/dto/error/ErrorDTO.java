@@ -13,10 +13,10 @@ import java.io.Serializable;
 @Builder
 public class ErrorDTO implements Serializable {
 
-    private final int statusCode;
+    private final String statusCode;
     private final String message;
 
-    public ErrorDTO(int statusCode, String message) {
+    public ErrorDTO(String statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }

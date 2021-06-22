@@ -119,7 +119,7 @@ class ServiceUsuarioSpec extends Specification{
 
         then:"Respuesta Exeption"
         ErrorException error = thrown()
-        error.getHttpStatus() == HttpStatus.NO_CONTENT
+        error.getHttpStatus() == HttpStatus.NOT_FOUND
         respuesta == null
 
     }

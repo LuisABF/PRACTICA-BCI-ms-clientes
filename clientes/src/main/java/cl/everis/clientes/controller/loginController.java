@@ -10,6 +10,7 @@ import cl.everis.clientes.exception.ErrorException;
 import cl.everis.clientes.model.Usuario;
 import cl.everis.clientes.repository.UsuarioRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -29,6 +30,9 @@ public class loginController {
     public loginController(UsuarioRepo usuarioRespository) {
         this.usuarioRespository = usuarioRespository;
     }
+
+    @Value("${mySecretKey}")
+    private String mySecretKey;
 
     @PostMapping("login")
     public UsuarioLoginDTO login(@RequestParam("rut") String rut, @RequestParam("password") String password) {
@@ -55,7 +59,8 @@ public class loginController {
     }
 
     private String getJWTToken(String username) {
-        String secretKey = "mySecretKey";
+
+        String secretKey = mySecretKey;
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                 .commaSeparatedStringToAuthorityList("ROLE_USER");
 

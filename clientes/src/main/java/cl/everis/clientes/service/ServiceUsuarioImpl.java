@@ -105,7 +105,7 @@ public class ServiceUsuarioImpl implements ServiceUsuario{
                     .build();
 
         }else{
-            throw new ErrorException(HttpStatus.NO_CONTENT, "Sin resultados");
+            throw new ErrorException(HttpStatus.NOT_FOUND, "No existe el recurso");
         }
     }
 

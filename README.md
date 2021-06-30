@@ -12,7 +12,7 @@ _Estas instrucciones te permitirán obtener una copia del proyecto en funcionami
 _Para contruir y correr la aplicación usted necesita:_
 
 - [JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-- [Maven 3](https://maven.apache.org)
+- [Gradle](https://gradle.org/)
 
 ### Autenticación :key:
 _Se implementó una capa de seguridad usando **JWT**._

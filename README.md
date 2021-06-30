@@ -42,6 +42,119 @@ Respuesta
     "token": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiJzb2Z0dGVrSldUIiwic3ViIjoiMTgxODA5NDUiLCJhdXRob3JpdGllcyI6WyJST0xFX1VTRVIiXSwiaWF0IjoxNjI1MDcwODEwLCJleHAiOjE2MjUwNzE0MTB9.ydyQUk_ymGgSW7IKfsSWVFnkwkQsPNlLhWCZNX-MBwocp7GXWDXEpfUjPZ7j_pZD239ksORjk5JTrCGHNEHlog"
 }
 ```
+## REST API
+
+Ejemplos uso de Rest Api
+
+### Listar usuarios
+### Request
+
+`GET /usuarios`
+
+    localhost:8010/usuarios
+
+### Response
+
+    HTTP/1.1 200 OK
+    {
+        "rut": 18180945,
+        "nombre": "Arturo",
+        "clave": "12323434",
+        "email": "luis@algo.cl",
+        "contactos": []
+    }
+
+### Nuevo usuario
+
+### Request
+
+`POST /usuarios`
+
+    localhost:8010/usuarios
+
+
+```json
+{
+    "rut": 18180947,
+    "nombre":"Arturo",
+    "clave":"Luis22",
+    "email":"",
+    "contactos":[
+        {
+            "numero":"8903475",
+            "codigoCiudad":"9",
+            "codigoPais":"56"
+        },
+                {
+            "numero":"1103475",
+            "codigoCiudad":"9",
+            "codigoPais":"56"
+        }
+    ]
+}
+```   
+
+### Response
+
+    HTTP/1.1 201 Created
+
+
+## Obtener usuario específico 
+
+### Request
+
+`GET /usuarios/id`
+
+     localhost:8010/usuarios/18180947
+
+### Response
+```json
+    {
+    "rut": 18180947,
+    "nombre": "Arturo",
+    "clave": "Luis22",
+    "email": "luis@algo.cl",
+    "contactos": [
+        {
+            "numero": "8903475",
+            "codigoCiudad": "9",
+            "codigoPais": "56"
+        },
+        {
+            "numero": "1103475",
+            "codigoCiudad": "9",
+            "codigoPais": "56"
+        }
+    ]
+}
+``` 
+
+## Eliminar usuario específico 
+
+### Request
+
+`DELETE /usuarios/id`
+
+     localhost:8010/usuarios/18180947
+
+### Response
+`HTTP/1.1 204 No Content`
+
+## Si el usuario no existe
+
+### Request
+
+`GET /usuarios/id`
+
+    localhost:8010/usuarios/18180947
+
+### Response
+```json
+{
+    "statusCode": "404",
+    "message": "No existe el recurso"
+}
+``` 
 
 
 ## Construido con 🛠️

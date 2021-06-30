@@ -9,7 +9,6 @@ import cl.everis.clientes.dto.UsuarioLoginDTO;
 import cl.everis.clientes.exception.ErrorException;
 import cl.everis.clientes.model.Usuario;
 import cl.everis.clientes.repository.UsuarioRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -60,7 +59,7 @@ public class loginController {
 
     private String getJWTToken(String username) {
 
-        String secretKey = mySecretKey;
+        String secretKey = this.mySecretKey;
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                 .commaSeparatedStringToAuthorityList("ROLE_USER");
 

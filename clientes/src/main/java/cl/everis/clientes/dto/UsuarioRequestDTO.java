@@ -29,6 +29,7 @@ public class UsuarioRequestDTO implements Serializable {
     @Pattern(regexp = "[A-Z]{1}[a-z]*[0-9]{2}", message = "Debe ingresar una mayuscula, minusculas y 2 números")
     private String clave;
 
+    @NotBlank
     @Email (message = "Ingrese una dirección de correo electrónico válida ")
     private String email;
 

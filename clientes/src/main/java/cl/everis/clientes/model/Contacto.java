@@ -1,10 +1,7 @@
 package cl.everis.clientes.model;
 
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * Clase Entity para la persistencia de los telefonos del usuario

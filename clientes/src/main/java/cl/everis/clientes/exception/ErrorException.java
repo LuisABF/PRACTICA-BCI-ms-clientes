@@ -15,6 +15,4 @@ public class ErrorException extends RuntimeException {
         this.httpStatus = httpStatus;
         this.message = message;
     }
-
-
 }

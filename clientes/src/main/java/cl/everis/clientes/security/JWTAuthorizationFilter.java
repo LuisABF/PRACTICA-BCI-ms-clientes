@@ -14,6 +14,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/**
+ * clase que intercepta las invocaciones a recursos protegidos para recuperar el token
+ *
+ */
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
 	private final String HEADER = "Authorization";
@@ -39,15 +44,19 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 			((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
 			return;
 		}
-	}	
+	}
 
+	/**
+	 * Validar el token
+	 *
+	 */
 	private Claims validateToken(HttpServletRequest request) {
 		String jwtToken = request.getHeader(HEADER).replace(PREFIX, "");
 		return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
 	}
 
 	/**
-	 * Authentication method in Spring flow
+	 * Metodo para autenticarnos dentro del flujo de Spring
 	 * 
 	 * @param claims
 	 */
@@ -60,7 +69,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 		SecurityContextHolder.getContext().setAuthentication(auth);
 
 	}
-
+	/**
+	 * Validar si existe token
+	 *
+	 */
 	private boolean checkJWTToken(HttpServletRequest request, HttpServletResponse res) {
 		String authenticationHeader = request.getHeader(HEADER);
 		if (authenticationHeader == null || !authenticationHeader.startsWith(PREFIX))

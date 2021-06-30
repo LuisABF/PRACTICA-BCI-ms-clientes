@@ -4,11 +4,9 @@ import cl.everis.clientes.dto.error.ErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -29,7 +27,7 @@ public class ErrorHandler {
     @ExceptionHandler(ErrorException.class)
     public ResponseEntity<?> manageErrorCustomException(ErrorException exception){
         ErrorDTO errorDetailsDTO =
-                new ErrorDTO(String.valueOf(HttpStatus.BAD_REQUEST.value()), exception.getMessage());
+                new ErrorDTO(String.valueOf(exception.getHttpStatus().value()), exception.getMessage());
         return new ResponseEntity<>(errorDetailsDTO, exception.getHttpStatus());
     }
 

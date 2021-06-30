@@ -162,7 +162,7 @@ Ejemplos uso de Rest Api
 _Herramientas para crear el proyecto_
 
 * [IntelliJ IDEA](https://www.jetbrains.com/) - IDE Desarrollo
-* [Maven](https://maven.apache.org/) - Manejador de dependencias
+*  [Gradle](https://gradle.org/) - Manejador de dependencias
 
 ## Autores ✒️
 
